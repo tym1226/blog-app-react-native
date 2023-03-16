@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,19 @@ import { Context as BlogContext } from "../context/BlogContext";
 import { Feather } from "@expo/vector-icons";
 
 const IndexScreen = ({ navigation }) => {
-  const { state, deleteBlogPost } = useContext(BlogContext);
+  const { state, deleteBlogPost, getBlogPost } = useContext(BlogContext);
+
+  useEffect(() => {
+    getBlogPost();
+    const listener = navigation.addListener("focus", () => {
+      getBlogPost();
+    });
+
+    // cleanup to avoid memory leak
+    return () => {
+      listener.remove();
+    };
+  }, []);
 
   // add a plus sign to the header
   React.useEffect(() => {
@@ -24,7 +36,7 @@ const IndexScreen = ({ navigation }) => {
       ),
     });
   }, []);
-  console.log(state);
+
   return (
     <View>
       <Text style={styles.welcome}>Welcome!</Text>
